@@ -20,46 +20,80 @@ const rooms = {};
 fastify.ready((err) => {
 	if (err) throw err;
 
-	fastify.io.on(
-		'connection',
-		(socket) => {
-				fastify.io.on(
-					'answer',
-					(payload) => fastify.io.to(payload.target).emit('answer', payload),
-				);
+	fastify
+		.io
+		.on(
+			'connection',
+			(socket) => {
+					fastify
+						.io
+						.on(
+							'answer',
+							(payload) => {
+								fastify
+									.io
+									.to(payload.target)
+									.emit(
+										'answer',
+										payload,
+									);
+							},
+						);
 
-				fastify.io.on(
-					'ice-candidate',
-					(incoming) => fastify.io.to(incoming.target).emit('ice-candidate', {
-						candidate: incoming.candidate,
-						origin: incoming.origin,
-					}),
-				);
+					fastify
+						.io
+						.on(
+							'ice-candidate',
+							(incoming) => {
+								fastify
+									.io
+									.to(incoming.target)
+									.emit(
+										'ice-candidate',
+										{
+											candidate: incoming.candidate,
+											origin: incoming.origin,
+										},
+									);
+							},
+						);
 
-				fastify.io.on(
-					'join room',
-					(roomID) => {
-						if (rooms[roomID]) {
-							rooms[roomID].push(socket.id);
-						} else {
-							rooms[roomID] = [socket.id];
-						}
+					fastify
+						.io
+						.on(
+							'join room',
+							(roomID) => {
+								if (rooms[roomID]) {
+									rooms[roomID].push(socket.id);
+								} else {
+									rooms[roomID] = [socket.id];
+								}
 
-						const otherUser = rooms[roomID].find((socketID) => socketID !== socket.id);
+								const otherUser = rooms[roomID].find((socketID) => socketID !== socket.id);
 
-						if (otherUser) {
-							socket.emit('other user', otherUser);
-							socket.to(otherUser).emit('user joined', socket.id);
-						}
-					}
-				);
+								if (otherUser) {
+									socket.emit('other user', otherUser);
+									socket.to(otherUser).emit('user joined', socket.id);
+								}
+							},
+						);
 
-				fastify.io.on(
-					'offer',
-					(payload) => fastify.io.to(payload.target).emit('offer', payload),
-				);
-		},
-	);
+					fastify
+						.io
+						.on(
+							'offer',
+							(payload) => {
+								fastify
+									.io
+									.to(payload.target)
+									.emit(
+										'offer',
+										payload,
+									);
+							},
+						);
+			},
+		);
 });
 
 // server.register(async function (server) {
