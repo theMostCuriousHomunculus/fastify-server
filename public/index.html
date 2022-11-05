@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Web RTC">
+		<title>Web RTC</title>
+	</head>
+
+	<body>
+		<ul id="videos">
+			<li>
+				<video autoplay id="local-video" playsinline>
+				</video>
+			</li>
+		</ul>
+		<ul id="chat">
+
+		</ul>
+		<input id="message" type="text" autofocus />
+		<script src="https://cdn.socket.io/4.5.3/socket.io.min.js" integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi" crossorigin="anonymous"></script>
+		<script src="client.js"></script>
+	</body>
+</html>
