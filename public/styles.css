@@ -1,0 +1,17 @@
+.video-container {
+  /* border: 1px solid black; */
+  overflow: hidden;
+  resize: horizontal;
+}
+
+video {
+  height: auto;
+  width: 100%;
+}
+
+#videos {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
