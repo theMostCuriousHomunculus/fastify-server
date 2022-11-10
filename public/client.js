@@ -1,4 +1,6 @@
 const cameraVideo = document.getElementById('camera-video');
+const chatHistory = document.getElementById('chat-history');
+const chatInput = document.getElementById('chat-input');
 const peers = {};
 const screenShareButton = document.getElementById('screen-share-button');
 const servers = {
@@ -93,6 +95,13 @@ screenShareButton.addEventListener(
 	},
 );
 
+const handleIncomingChatMessage = (event) => {
+	const newMessage = document.createElement('div');
+	newMessage.classList.add('received');
+	newMessage.innerText = event.data;
+	chatHistory.appendChild(newMessage);
+};
+
 (async () => {
 	const stream = await navigator
 		.mediaDevices
@@ -121,6 +130,21 @@ screenShareButton.addEventListener(
 		'another user joined',
 		(userID) => {
 			createPeer(userID, 'camera');
+			const chatChannel = peers[userID].camera.createDataChannel('chat');
+			chatChannel.onmessage = handleIncomingChatMessage;
+			chatInput.addEventListener(
+				'keydown',
+				(keydownEvent) => {
+					if (keydownEvent.key === 'Enter' && !keydownEvent.shiftKey) {
+						chatChannel.send(chatInput.value);
+						const newMessage = document.createElement('div');
+						newMessage.classList.add('sent');
+						newMessage.innerText = chatInput.value;
+						chatHistory.appendChild(newMessage);
+						chatInput.value = '';
+					}
+				},
+			);
 			stream.getTracks().forEach((track) => peers[userID].camera.addTrack(track, stream));
 		},
 	);
@@ -133,7 +157,26 @@ screenShareButton.addEventListener(
 			source,
 		}) => {
 			createPeer(caller, source);
-			console.log(peers);
+			if (source === 'camera') {
+				peers[caller].camera.ondatachannel = (dataChannelEvent) => {
+					if (dataChannelEvent.channel.label === 'chat') {
+						dataChannelEvent.channel.onmessage = handleIncomingChatMessage;
+						chatInput.addEventListener(
+							'keydown',
+							(keydownEvent) => {
+								if (keydownEvent.key === 'Enter' && !keydownEvent.shiftKey) {
+									dataChannelEvent.channel.send(chatInput.value);
+									const newMessage = document.createElement('div');
+									newMessage.classList.add('sent');
+									newMessage.innerText = chatInput.value;
+									chatHistory.appendChild(newMessage);
+									chatInput.value = '';
+								}
+							},
+						);
+					}
+				}
+			}
 			const description = new RTCSessionDescription(sdp);
 			peers[caller][source].setRemoteDescription(description)
 				.then(() => {

@@ -1,3 +1,12 @@
+.received {
+  background-color: springgreen;
+}
+
+.sent {
+  background-color: deepskyblue;
+  text-align: right;
+}
+
 .video-container {
   /* border: 1px solid black; */
   overflow: hidden;
@@ -7,6 +16,14 @@
 video {
   height: auto;
   width: 100%;
+}
+
+#chat-history {
+  display: flex;
+  flex-direction: column;
+  font-family: monospace;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 #videos {
