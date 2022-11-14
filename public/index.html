@@ -9,19 +9,33 @@
 	</head>
 
 	<body>
-		<div id="videos">
-			<div class="video-container">
-				<video autoplay="true" controls="true" id="camera-video" playsinline="true">
-				</video>
+		<div id="file-share-container">
+			<input id="file-share-input" type="file">
+			<button id="file-share-button">Share File!</button>
+		</div>
+		<div id="communication-container">
+			<div id="chat-container">
+				<div id="chat-history">
+	
+				</div>
+				<div id="chat-input-container">
+					<label id="chat-input-label" for="chat-input">Send a message...</label>
+					<input aria-labelledby="chat-input-label" autocomplete="false" id="chat-input" type="text">
+				</div>
+			</div>
+			<div id="videos-container">
+				<div id="videos">
+					<div class="video-container">
+						<video autoplay="true" controls="true" id="camera-video" playsinline="true">
+						</video>
+					</div>
+				</div>
+				<button id="screen-share-button" type="button">Share Screen</button>
 			</div>
 		</div>
-		<div id="chat-history">
-
-		</div>
-		<label id="chat-input-label" for="chat-input">Send a message...</label>
-		<input aria-labelledby="chat-input-label" autocomplete="false" id="chat-input" type="text">
-		<button id="screen-share-button" type="button">Share Screen</button>
 		<script src="https://cdn.socket.io/4.5.3/socket.io.min.js" integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/web-streams-polyfill@2.0.2/dist/ponyfill.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/streamsaver@2.0.3/StreamSaver.min.js"></script>
 		<script src="client.js"></script>
 	</body>
 </html>

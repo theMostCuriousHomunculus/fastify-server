@@ -1,6 +1,51 @@
 const cameraVideo = document.getElementById('camera-video');
 const chatHistory = document.getElementById('chat-history');
 const chatInput = document.getElementById('chat-input');
+const fileShareButton = document.getElementById('file-share-button');
+const fileShareButtonOnClickHandler = (clickEvent) => {
+	for (let i = 0; i < fileShareInput.files.length; i++) {
+		const file = fileShareInput
+			.files
+			.item(i);
+		const reader = file
+			.stream()
+			.getReader();
+		reader
+			.read()
+			.then(
+				(chunk) => handleStreamChunk(chunk),
+			);
+
+		const handleStreamChunk = ({
+			done,
+			value,
+		}) => {
+			// Object.entries(peers)...
+			if (done) {
+				peers[userID]
+					.camera
+					.write(
+						JSON.stringify({
+							done: true,
+							fileName: file.name,
+						}),
+					);
+				return;
+			}
+
+			peers[userID]
+				.camera
+				.write(value);
+			reader
+				.read()
+				.then(
+					(chunk) => handleStreamChunk(chunk),
+				);
+		};
+	}
+};
+const fileShareContainer = document.getElementById('file-share-container');
+const fileShareInput = document.getElementById('file-share-input');
 const peers = {};
 const screenShareButton = document.getElementById('screen-share-button');
 const servers = {
@@ -17,6 +62,7 @@ const servers = {
 };
 const socket = io();
 const videos = document.getElementById('videos');
+const worker = new Worker('./worker.js');
 
 const createPeer = (userID, source) => {
 	peers[userID] = peers[userID] ?? {};
@@ -102,6 +148,33 @@ const handleIncomingChatMessage = (event) => {
 	chatHistory.appendChild(newMessage);
 };
 
+const handleIncomingFileMessage = (event) => {
+	if (event.data.toString().includes('done')) {
+		// show the download button
+		const downloadButton = document.createElement('button');
+		const fileName = JSON.parse(event.data).fileName;
+		downloadButton.innerText = `Download ${fileName}`;
+		downloadButton.addEventListener(
+			'click',
+			() => {
+				worker.postMessage('download');
+				worker.addEventListener(
+					'message',
+					(messageEvent) => {
+						const stream = messageEvent.data.stream();
+						const fileStream = window.streamSaver.createWriteStream(fileName);
+						stream.pipeTo(fileStream);
+					},
+				);
+				downloadButton.remove();
+			},
+		);
+		fileShareContainer.appendChild(downloadButton);
+	} else {
+		worker.postMessage(event.data);
+	}
+};
+
 (async () => {
 	const stream = await navigator
 		.mediaDevices
@@ -145,6 +218,12 @@ const handleIncomingChatMessage = (event) => {
 					}
 				},
 			);
+			const fileChannel = peers[userID].camera.createDataChannel('file');
+			fileChannel.onmessage = handleIncomingFileMessage;
+			fileShareButton.addEventListener(
+				'click',
+				fileShareButtonOnClickHandler,
+			);
 			stream.getTracks().forEach((track) => peers[userID].camera.addTrack(track, stream));
 		},
 	);
@@ -174,6 +253,14 @@ const handleIncomingChatMessage = (event) => {
 								}
 							},
 						);
+					}
+
+					if (dataChannelEvent.channel.label === 'file') {
+						dataChannelEvent.channel.onmessage = handleIncomingFileMessage;
+						fileShareButton.addEventListener(
+							'click',
+							fileShareButtonOnClickHandler,
+						)
 					}
 				}
 			}

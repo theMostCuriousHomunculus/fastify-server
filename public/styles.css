@@ -1,16 +1,34 @@
 .received {
+  align-self: flex-start;
   background-color: springgreen;
+  padding: 4px;
+  width: 80%;
 }
 
 .sent {
+  align-self: flex-end;
   background-color: deepskyblue;
+  padding: 4px;
   text-align: right;
+  width: 80%;
 }
 
 .video-container {
   /* border: 1px solid black; */
   overflow: hidden;
   resize: horizontal;
+  width: calc(50% - 4px);
+}
+
+body {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-family: monospace;
+  height: 100vh;
+  margin: 0;
+  padding: 4px;
+  row-gap: 4px;
 }
 
 video {
@@ -18,17 +36,56 @@ video {
   width: 100%;
 }
 
+#chat-container {
+  border: 2px solid goldenrod;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 4px;
+  width: 30%;
+}
+
 #chat-history {
   display: flex;
   flex-direction: column;
-  font-family: monospace;
-  height: 100vh;
+  flex-grow: 1;
   overflow-y: auto;
+  row-gap: 4px;
+}
+
+#chat-input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+#communication-container {
+  column-gap: 4px;
+  display: flex;
+  flex-grow: 1;
+}
+
+#file-share-container {
+  border: 2px solid seagreen;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-around;
+  padding: 4px;
 }
 
 #videos {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 4px;
+}
+
+#videos-container {
+  border: 2px solid blueviolet;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 4px;
+  width: 70%;
 }
